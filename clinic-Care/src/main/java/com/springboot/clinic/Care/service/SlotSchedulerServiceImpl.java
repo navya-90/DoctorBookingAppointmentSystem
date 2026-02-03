@@ -12,11 +12,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class SlotScheduler {
+public class SlotSchedulerServiceImpl implements SlotSchedulerService{
 
     private final SlotService slotService;
     private final DoctorRepository doctorRepository;
 
+    @Override
     @Scheduled(cron = "0 0 0 * * ?") // Runs at midnight every day
     @Transactional
     public void extendSlotsForAllDoctors() {
