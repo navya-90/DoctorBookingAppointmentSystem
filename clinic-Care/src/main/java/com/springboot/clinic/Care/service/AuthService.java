@@ -11,5 +11,5 @@ public interface AuthService {
 
     AuthResponse login(AuthRequest request);
 
-    void changePassword(PasswordChangeRequest request);
+    void changePassword(String email, PasswordChangeRequest request);
 }

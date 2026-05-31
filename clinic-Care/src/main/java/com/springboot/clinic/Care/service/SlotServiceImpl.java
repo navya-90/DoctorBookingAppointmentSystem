@@ -131,6 +131,10 @@ public class SlotServiceImpl implements SlotService{
 
         // Generate slots for each day in the range
         for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            if (date.getDayOfWeek() == DayOfWeek.SATURDAY ||
+                    date.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                continue;
+            }
             generateSlotsForDay(doctor, date, startTime, endTime, slotDurationMinutes);
         }
     }
@@ -159,5 +163,47 @@ public class SlotServiceImpl implements SlotService{
 
             currentTime = currentTime.plusMinutes(slotDurationMinutes);
         }
+    }
+
+    @Override
+    public org.springframework.data.domain.Page<com.springboot.clinic.Care.dto.SlotInfo> getAvailableSlotsForDoctor(Long doctorId, int page, int size) {
+        LocalDate today = LocalDate.now();
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                page, size, org.springframework.data.domain.Sort.by("date").ascending().and(org.springframework.data.domain.Sort.by("time"))
+        );
+
+        return slotRepository.findByDoctorIdAndAppointmentIsNullAndDateGreaterThanEqual(
+                doctorId,
+                today,
+                pageable
+        ).map(slot -> new com.springboot.clinic.Care.dto.SlotInfo(
+                slot.getId(),
+                slot.getDate(),
+                slot.getTime()
+        ));
+    }
+
+    @Override
+    public List<com.springboot.clinic.Care.dto.SlotInfo> getAvailableSlotsForDoctorFromNow(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Doctor doctor = doctorRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+
+        List<Slot> allSlots = slotRepository.findByDoctorAndDateGreaterThanEqualAndIsBookedFalse(
+                doctor, LocalDate.now()
+        );
+
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+
+        return allSlots.stream()
+                .filter(slot -> {
+                    if (slot.getDate().isAfter(today)) return true;
+                    return slot.getDate().isEqual(today) && slot.getTime().isAfter(now);
+                })
+                .map(slot -> new com.springboot.clinic.Care.dto.SlotInfo(slot.getId(), slot.getDate(), slot.getTime()))
+                .toList();
     }
 }

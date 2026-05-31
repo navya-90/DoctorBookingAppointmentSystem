@@ -41,7 +41,7 @@ public class PatientServiceImpl implements PatientService{
     public Patient getPatientByEmail(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        return patientRepository.findByUser(user)
+        return patientRepository.findFirstByUserOrderByIdDesc(user)
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
     }
 

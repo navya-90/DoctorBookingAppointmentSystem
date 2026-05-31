@@ -15,6 +15,9 @@ import java.util.Optional;
 
 public interface SlotRepository extends JpaRepository<Slot, Long> {
     List<Slot> findByDoctorAndIsBookedFalse(Doctor doctor);
+
+    @Query("SELECT s FROM Slot s WHERE s.doctor IN :doctors AND s.isBooked = false")
+    List<Slot> findByDoctorInAndIsBookedFalse(@Param("doctors") List<Doctor> doctors);
     List<Slot> findByDoctorAndDate(Doctor doctor, LocalDate date);
     boolean existsByDoctorAndDateAndTime(Doctor doctor, LocalDate date, java.time.LocalTime time);
 

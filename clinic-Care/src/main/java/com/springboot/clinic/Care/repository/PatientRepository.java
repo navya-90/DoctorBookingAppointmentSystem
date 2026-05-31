@@ -7,5 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface PatientRepository extends JpaRepository<Patient, Long> {
-    Optional<Patient> findByUser(User user);
+    java.util.List<Patient> findByUser(User user);
+    Optional<Patient> findFirstByUserOrderByIdDesc(User user);
+    Optional<Patient> findByUserAndNameAndAgeAndGender(User user, String name, int age, String gender);
 }

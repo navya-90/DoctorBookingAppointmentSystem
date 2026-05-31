@@ -39,4 +39,10 @@ public class Appointment {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private java.time.LocalDate appointmentDate;
+    private java.time.LocalTime appointmentTime;
+    private String cancellationReason;
+
+    @Column(length = 2000)
+    private String rescheduleHistory;
 }

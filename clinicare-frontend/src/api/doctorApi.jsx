@@ -15,7 +15,7 @@ export const rescheduleAppointment = async (appointmentId, newDateTime) => {
   });
 };
 
-export const fetchPatientCount = async (doctorId) => {
-  const response = await instance.get(`/doctor/${doctorId}/patient-count`);
+export const fetchPatientCount = async () => {
+  const response = await instance.get('/doctor/patient-count');
   return response.data;
 }

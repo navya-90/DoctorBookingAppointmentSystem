@@ -18,4 +18,8 @@ public interface SlotService {
     void extendSlotsForDoctor(Doctor doctor, int daysToAdd);
 
     void generateSlotsBetween(Doctor doctor, LocalDate startDate, LocalDate endDate);
+
+    org.springframework.data.domain.Page<com.springboot.clinic.Care.dto.SlotInfo> getAvailableSlotsForDoctor(Long doctorId, int page, int size);
+
+    List<com.springboot.clinic.Care.dto.SlotInfo> getAvailableSlotsForDoctorFromNow(String email);
 }

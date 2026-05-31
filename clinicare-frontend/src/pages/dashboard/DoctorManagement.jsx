@@ -3,6 +3,7 @@ import AddDoctorForm from '../../components/admin/AddDoctorForm';
 import DoctorList from '../../components/admin/DoctorList';
 import { fetchAllDoctors, deleteDoctor, updateDoctor } from '../../api/doctorService'; 
 import EditDoctorModal from '../../components/EditDoctorModal';
+import AdminSidebar from '../../components/admin/AdminSidebar';
 
 const DoctorManagement = () => {
   const [doctors, setDoctors] = useState([]);
@@ -45,19 +46,23 @@ const DoctorManagement = () => {
   };
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Doctor Management</h1>
-      <AddDoctorForm onSuccess={() => setRefresh(prev => !prev)} />
-      <DoctorList doctors={doctors} onDelete={handleDelete} onEdit={handleEdit} />
-      {editingDoctor && (
-        <EditDoctorModal
-          doctor={editingDoctor}
-          onClose={() => setEditingDoctor(null)}
-          onSave={handleSaveEdit}
-        />
-      )}
+    <div className="flex min-h-screen">
+      <AdminSidebar />
+      <div className="flex-1 p-8">
+        <h1 className="text-2xl font-bold mb-6">Doctor Management</h1>
+        <AddDoctorForm onSuccess={() => setRefresh(prev => !prev)} />
+        <DoctorList doctors={doctors} onDelete={handleDelete} onEdit={handleEdit} />
+        {editingDoctor && (
+          <EditDoctorModal
+            doctor={editingDoctor}
+            onClose={() => setEditingDoctor(null)}
+            onSave={handleSaveEdit}
+          />
+        )}
+      </div>
     </div>
   );
 };
+
 
 export default DoctorManagement;

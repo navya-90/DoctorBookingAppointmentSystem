@@ -15,6 +15,6 @@ export const changePasswordApi = async (payload) => {
     const res = await axios.post('/auth/change-password', payload);
     return { success: true, data: res.data };
   } catch (error) {
-    return { success: false, error: error.response?.data?.message || 'Error occurred' };
+    return { success: false, error: error.response?.data?.error || error.response?.data?.message || 'Error occurred' };
   }
 };

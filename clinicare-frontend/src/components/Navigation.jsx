@@ -15,6 +15,7 @@ const Navigation = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("clinicare_user");
+    localStorage.removeItem("token");
     setUser(null);
     navigate('/');
   };

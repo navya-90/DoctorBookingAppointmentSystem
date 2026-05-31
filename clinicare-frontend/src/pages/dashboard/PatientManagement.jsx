@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { fetchAllPatients } from '../../api/doctorService';
 import PatientList from '../../components/admin/PatientList';
+import AdminSidebar from '../../components/admin/AdminSidebar';
 
 const PatientManagement = () => {
   const [patients, setPatients] = useState([]);
@@ -18,9 +19,12 @@ const PatientManagement = () => {
   }, []);
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Patient Management</h1>
-      {loading ? <p>Loading...</p> : <PatientList patients={patients} />}
+    <div className="flex min-h-screen">
+      <AdminSidebar />
+      <div className="flex-1 p-8">
+        <h1 className="text-2xl font-bold mb-4">Patient Management</h1>
+        {loading ? <p>Loading...</p> : <PatientList patients={patients} />}
+      </div>
     </div>
   );
 };

@@ -20,11 +20,6 @@ export const deleteDoctor = async (id) => {
   await instance.delete(`/admin/delete-doctor/${id}`);
 };
 
-export const getDoctorById = async (id) => {
-  const response = await instance.get(`/admin/doctor/${id}`);
-  return response.data;
-};
-
 export const fetchDashboardSummary = async () => {
   const response = await instance.get("/admin/dashboard-summary");
   return response.data;

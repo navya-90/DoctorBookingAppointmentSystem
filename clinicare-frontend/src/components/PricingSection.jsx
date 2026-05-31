@@ -16,7 +16,7 @@ const pricingPlans = [
   },
   {
     name: "Monthly",
-    price: "299",
+    price: "799",
     period: "month",
     features: [
       "Unlimited appointments",
@@ -29,8 +29,8 @@ const pricingPlans = [
   },
   {
     name: "Annually",
-    price: "999",
-    period: "month",
+    price: "559",
+    period: "month (billed ₹6711 annually)",
     features: [
       "Multi-clinic management",
       "Custom integrations",

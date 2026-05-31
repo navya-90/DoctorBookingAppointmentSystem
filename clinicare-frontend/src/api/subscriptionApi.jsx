@@ -1,8 +1,11 @@
 import instance from "./axiosInstance";
 
-export const upgradeSubscription = async (planType) => {
+export const upgradeSubscription = async (planType, paymentDetails) => {
   try {
-    const response = await instance.patch(`/subscription/upgrade?planType=${planType}`);
+    const { paymentId, paymentLinkId, paymentLinkReferenceId, paymentLinkStatus, signature } = paymentDetails;
+    const response = await instance.patch(
+      `/subscription/upgrade?planType=${planType}&paymentId=${paymentId}&paymentLinkId=${paymentLinkId}&paymentLinkReferenceId=${paymentLinkReferenceId || ""}&paymentLinkStatus=${paymentLinkStatus}&signature=${signature}`
+    );
     return { success: true, data: response.data };
   } catch (error) {
     return {

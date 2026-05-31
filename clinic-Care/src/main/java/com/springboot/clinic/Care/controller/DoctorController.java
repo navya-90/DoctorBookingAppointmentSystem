@@ -46,9 +46,13 @@ public class DoctorController {
         return ResponseEntity.ok("Appointment rescheduled and user notified.");
     }
 
-    @GetMapping("/{doctorId}/patient-count")
-    public ResponseEntity<Long> getPatientCount(@PathVariable Long doctorId) {
-        long count = doctorRepository.countDistinctPatientsByDoctorId(doctorId);
+    @GetMapping("/patient-count")
+    public ResponseEntity<Long> getPatientCount(Authentication authentication) {
+        UserDetailsImplementation userDetails = (UserDetailsImplementation) authentication.getPrincipal();
+        String email = userDetails.getEmail();
+        com.springboot.clinic.Care.model.Doctor doctor = doctorRepository.findByUserEmail(email)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+        long count = doctorRepository.countDistinctPatientsByDoctorId(doctor.getId());
         return ResponseEntity.ok(count);
     }
 

@@ -63,7 +63,10 @@ export default function DoctorSlotBooking() {
 
     // Success case
     setSuccess(true);
-    setTimeout(() => setSuccess(false), 3000);
+    if (successTimeoutRef.current) {
+      clearTimeout(successTimeoutRef.current);
+    }
+    successTimeoutRef.current = setTimeout(() => setSuccess(false), 3000);
     setFormData({ patientName: "", age: "", gender: "", address: "", slotId: "" });
     fetchSlots();
 
@@ -89,11 +92,21 @@ export default function DoctorSlotBooking() {
 
 
   const formRef = useRef(null);
-    useEffect(() => {
+  const successTimeoutRef = useRef(null);
+
+  useEffect(() => {
     if (formData.slotId && formRef.current) {
-        formRef.current.scrollIntoView({ behavior: "smooth" });
+      formRef.current.scrollIntoView({ behavior: "smooth" });
     }
-    }, [formData.slotId]);
+  }, [formData.slotId]);
+
+  useEffect(() => {
+    return () => {
+      if (successTimeoutRef.current) {
+        clearTimeout(successTimeoutRef.current);
+      }
+    };
+  }, []);
 
 
   return (

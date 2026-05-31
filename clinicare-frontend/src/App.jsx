@@ -43,14 +43,15 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/change-password" element={<ChangePassword />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/admin-dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-        <Route path="/admin/doctors" element={<ProtectedRoute><DoctorManagement /></ProtectedRoute>} />
-        <Route path="/admin/patients" element={<ProtectedRoute><PatientManagement /></ProtectedRoute>}/>
-        <Route path="/doctor-dashboard" element={<ProtectedRoute><DoctorDashboard /></ProtectedRoute>} />
-        <Route path="/patient-dashboard" element={<ProtectedRoute><PatientDashboard /></ProtectedRoute>} />
-        <Route path="/patient-dashboard/:doctorId" element={<ProtectedRoute><DoctorSlotBooking /></ProtectedRoute>} />
-        <Route path="/pricing" element={<ProtectedRoute><PricingPage /></ProtectedRoute>} />
-        <Route path="/upgrade_plan/success" element={<ProtectedRoute><UpgradeSuccess /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin-dashboard" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/doctors" element={<ProtectedRoute allowedRoles={['ADMIN']}><DoctorManagement /></ProtectedRoute>} />
+        <Route path="/admin/patients" element={<ProtectedRoute allowedRoles={['ADMIN']}><PatientManagement /></ProtectedRoute>}/>
+        <Route path="/doctor-dashboard" element={<ProtectedRoute allowedRoles={['DOCTOR']}><DoctorDashboard /></ProtectedRoute>} />
+        <Route path="/patient-dashboard" element={<ProtectedRoute allowedRoles={['PATIENT']}><PatientDashboard /></ProtectedRoute>} />
+        <Route path="/patient-dashboard/:doctorId" element={<ProtectedRoute allowedRoles={['PATIENT']}><DoctorSlotBooking /></ProtectedRoute>} />
+        <Route path="/pricing" element={<ProtectedRoute allowedRoles={['PATIENT']}><PricingPage /></ProtectedRoute>} />
+        <Route path="/upgrade_plan/success" element={<ProtectedRoute allowedRoles={['PATIENT']}><UpgradeSuccess /></ProtectedRoute>} />
       </Routes>
     </Router>
   )

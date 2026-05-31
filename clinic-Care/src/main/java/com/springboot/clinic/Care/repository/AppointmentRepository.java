@@ -10,4 +10,10 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     long countByUserAndPaymentDone(User user, boolean b);
 
     long countBySlot_Date(LocalDate today);
+
+    java.util.List<Appointment> findByUserEmail(String email);
+
+    java.util.List<Appointment> findByDoctorAndAppointmentDate(Doctor doctor, LocalDate date);
+
+    long countByAppointmentDateAndStatusNot(LocalDate date, Status status);
 }

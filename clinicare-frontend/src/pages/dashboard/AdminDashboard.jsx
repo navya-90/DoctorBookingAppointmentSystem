@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { Calendar, LayoutDashboard, Stethoscope, Users } from "lucide-react";
 import { Card, CardContent } from "../../components/ui/Card";
-import { Link } from "react-router-dom";
 import { fetchDashboardSummary } from "../../api/doctorService";
+import AdminSidebar from "../../components/admin/AdminSidebar";
 
 const AdminDashboard = () => {
   const [summary, setSummary] = useState({
@@ -20,31 +19,7 @@ const AdminDashboard = () => {
   }, []);
   return (
     <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <div className="w-64 bg-gray-100 p-4">
-        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-          <LayoutDashboard className="w-6 h-6" />
-          Admin Panel
-        </h2>
-        <nav className="flex flex-col gap-4">
-          <Link to="/admin" className="flex items-center gap-2 text-gray-800 hover:text-blue-600">
-            <LayoutDashboard className="w-5 h-5" />
-            <span>Dashboard</span>
-          </Link>
-          <Link to="/admin/doctors" className="flex items-center gap-2 text-gray-800 hover:text-blue-600">
-            <Stethoscope className="w-5 h-5" />
-            <span>Doctors</span>
-          </Link>
-          <Link to="/admin/patients" className="flex items-center gap-2 text-gray-800 hover:text-blue-600">
-            <Users className="w-5 h-5" />
-            <span>Patients</span>
-          </Link>
-          <Link to="/admin/appointments" className="flex items-center gap-2 text-gray-800 hover:text-blue-600">
-            <Calendar className="w-5 h-5" />
-            <span>Appointments</span>
-          </Link>
-        </nav>
-      </div>
+      <AdminSidebar />
 
       {/* Main content */}
       <div className="flex-1 p-8">

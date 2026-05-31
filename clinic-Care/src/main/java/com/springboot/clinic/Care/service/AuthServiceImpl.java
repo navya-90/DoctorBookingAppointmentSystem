@@ -8,6 +8,7 @@ import com.springboot.clinic.Care.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class AuthServiceImpl implements AuthService{
     private final SubscriptionService subscriptionService;
 
     @Override
+    @Transactional
     public AuthResponse register(RegisterRequest request) {
         User user = User.builder()
                 .name(request.getName())
@@ -53,8 +55,9 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Override
-    public void changePassword(PasswordChangeRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
+    @Transactional
+    public void changePassword(String email, PasswordChangeRequest request) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {

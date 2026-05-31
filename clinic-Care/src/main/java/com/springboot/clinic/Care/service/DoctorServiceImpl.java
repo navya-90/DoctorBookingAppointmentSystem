@@ -76,6 +76,7 @@ public class DoctorServiceImpl implements DoctorService{
     }
 
     @Override
+    @Transactional
     public DoctorResponse updateDoctor(Long id, DoctorUpdateRequest request) {
         Doctor doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
@@ -100,6 +101,7 @@ public class DoctorServiceImpl implements DoctorService{
     }
 
     @Override
+    @Transactional
     public void deleteDoctor(Long id) {
         Doctor doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
@@ -133,9 +135,32 @@ public class DoctorServiceImpl implements DoctorService{
 
     @Override
     public List<DoctorResponse> getAllDoctors() {
-        return doctorRepository.findAll().stream()
-                .map(this::buildDoctorResponse)
-                .collect(Collectors.toList());
+        List<Doctor> doctors = doctorRepository.findAllWithUser();
+        if (doctors.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+
+        List<Slot> allAvailableSlots = slotRepository.findByDoctorInAndIsBookedFalse(doctors);
+        java.util.Map<Long, List<SlotInfo>> slotsByDoctorId = allAvailableSlots.stream()
+                .collect(Collectors.groupingBy(
+                        slot -> slot.getDoctor().getId(),
+                        Collectors.mapping(
+                                slot -> new SlotInfo(slot.getId(), slot.getDate(), slot.getTime()),
+                                Collectors.toList()
+                        )
+                ));
+
+        return doctors.stream().map(doctor -> DoctorResponse.builder()
+                .id(doctor.getId())
+                .name(doctor.getUser().getName())
+                .email(doctor.getUser().getEmail())
+                .phone(doctor.getUser().getPhone())
+                .specialization(doctor.getSpecialization())
+                .experience(doctor.getExperience())
+                .licenseNumber(doctor.getLicenseNumber())
+                .availableSlots(slotsByDoctorId.getOrDefault(doctor.getId(), java.util.Collections.emptyList()))
+                .build()
+        ).collect(Collectors.toList());
     }
 
 
@@ -153,27 +178,25 @@ public class DoctorServiceImpl implements DoctorService{
         // 2. Get today's date
         LocalDate today = LocalDate.now();
 
-        // 3. Find appointments through slots
-        List<Slot> slots = slotRepository.findByDoctorAndDateAndAppointmentNotNull(doctor, today);
+        // 3. Find appointments directly from AppointmentRepository
+        List<Appointment> appointments = appointmentRepository.findByDoctorAndAppointmentDate(doctor, today);
 
         // 4. Format the response
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
 
-        List<DoctorAppointmentResponse.AppointmentInfo> appointmentInfos = slots.stream()
-                .map(slot -> {
-                    Appointment a = slot.getAppointment();
-                    return new DoctorAppointmentResponse.AppointmentInfo(
-                            slot.getTime().format(timeFormatter), // Get time from slot
-                            a.getPatient().getUser().getName(),
-                            a.getStatus()
-                    );
-                })
+        List<DoctorAppointmentResponse.AppointmentInfo> appointmentInfos = appointments.stream()
+                .map(a -> new DoctorAppointmentResponse.AppointmentInfo(
+                        a.getAppointmentTime().format(timeFormatter),
+                        a.getPatient().getUser().getName(),
+                        a.getStatus()
+                ))
                 .toList();
 
         return new DoctorAppointmentResponse(appointmentInfos.size(), appointmentInfos);
     }
 
     @Override
+    @Transactional
     public void cancelAppointment(Long appointmentId, String doctorEmail) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
@@ -196,6 +219,7 @@ public class DoctorServiceImpl implements DoctorService{
     }
 
     @Override
+    @Transactional
     public void rescheduleAppointment(Long appointmentId, String newDateTime, String doctorEmail) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
@@ -207,6 +231,8 @@ public class DoctorServiceImpl implements DoctorService{
         LocalDateTime newDateTimeObj = LocalDateTime.parse(newDateTime);
         appointment.getSlot().setDate(newDateTimeObj.toLocalDate());
         appointment.getSlot().setTime(newDateTimeObj.toLocalTime());
+        appointment.setAppointmentDate(newDateTimeObj.toLocalDate());
+        appointment.setAppointmentTime(newDateTimeObj.toLocalTime());
         appointment.setStatus(Status.RESCHEDULED);
 
         appointmentRepository.save(appointment);

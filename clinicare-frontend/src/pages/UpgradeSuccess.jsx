@@ -9,17 +9,34 @@ const UpgradeSuccess = () => {
   useEffect(() => {
     if (!planType) return;
 
+    const paymentId = query.get("razorpay_payment_id");
+    const paymentLinkId = query.get("razorpay_payment_link_id");
+    const paymentLinkReferenceId = query.get("razorpay_payment_link_reference_id");
+    const paymentLinkStatus = query.get("razorpay_payment_link_status");
+    const signature = query.get("razorpay_signature");
+
+    if (!paymentId || !paymentLinkId || !paymentLinkStatus || !signature) {
+      console.error("Missing payment verification details");
+      return;
+    }
+
     const upgradePlan = async () => {
       try {
-        await upgradeSubscription(planType.toUpperCase());
-        console.log("Plan upgraded!");
+        await upgradeSubscription(planType.toUpperCase(), {
+          paymentId,
+          paymentLinkId,
+          paymentLinkReferenceId,
+          paymentLinkStatus,
+          signature
+        });
+        console.log("Plan upgraded successfully!");
       } catch (err) {
         console.error("Plan upgrade failed", err);
       }
     };
 
     upgradePlan();
-  }, [planType]);
+  }, [planType, query]);
 
   return (
     <div className="text-center mt-10">

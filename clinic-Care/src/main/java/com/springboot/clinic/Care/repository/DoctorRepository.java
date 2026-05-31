@@ -14,6 +14,9 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
     Optional<Doctor> findByUser(User user);
 
+    @Query("SELECT d FROM Doctor d JOIN FETCH d.user")
+    java.util.List<Doctor> findAllWithUser();
+
     @Query("SELECT COUNT(DISTINCT a.patient.id) FROM Appointment a WHERE a.doctor.id = :doctorId")
     long countDistinctPatientsByDoctorId(Long doctorId);
 }

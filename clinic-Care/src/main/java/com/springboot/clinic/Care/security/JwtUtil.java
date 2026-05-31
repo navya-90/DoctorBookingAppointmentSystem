@@ -3,9 +3,10 @@ package com.springboot.clinic.Care.security;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 @Component
@@ -13,8 +14,12 @@ public class JwtUtil {
 
     private static final long expirationMs = 86400000; // 24 hours
 
-    private final Key secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);  // ✅ secure random key
+    private final Key secret;
 
+    public JwtUtil(@Value("${jwt.secret}") String secretString) {
+        byte[] keyBytes = Base64.getDecoder().decode(secretString);
+        this.secret = Keys.hmacShaKeyFor(keyBytes);
+    }
 
     public String generateToken(String email, String role) {
         return Jwts.builder()

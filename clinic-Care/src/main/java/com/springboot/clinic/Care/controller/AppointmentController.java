@@ -45,4 +45,36 @@ public class AppointmentController {
         return ResponseEntity.ok("Appointment status updated to " + status);
     }
 
+    @GetMapping("/my-appointments")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<java.util.List<AppointmentResponse>> getMyAppointments(Authentication authentication) {
+        UserDetailsImplementation userDetails = (UserDetailsImplementation) authentication.getPrincipal();
+        String email = userDetails.getEmail();
+        return ResponseEntity.ok(appointmentService.getPatientAppointments(email));
+    }
+
+    @PostMapping("/{id}/cancel")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<String> patientCancelAppointment(
+            @PathVariable Long id,
+            @RequestParam(required = false) String reason,
+            Authentication authentication
+    ) throws Exception {
+        UserDetailsImplementation userDetails = (UserDetailsImplementation) authentication.getPrincipal();
+        String email = userDetails.getEmail();
+        appointmentService.patientCancelAppointment(id, email, reason);
+        return ResponseEntity.ok("Appointment successfully cancelled.");
+    }
+
+    @PostMapping("/{id}/reschedule")
+    @PreAuthorize("hasRole('PATIENT')")
+    public ResponseEntity<AppointmentResponse> patientRescheduleAppointment(
+            @PathVariable Long id,
+            @RequestParam Long newSlotId,
+            Authentication authentication
+    ) throws Exception {
+        UserDetailsImplementation userDetails = (UserDetailsImplementation) authentication.getPrincipal();
+        String email = userDetails.getEmail();
+        return ResponseEntity.ok(appointmentService.patientRescheduleAppointment(id, email, newSlotId));
+    }
 }
